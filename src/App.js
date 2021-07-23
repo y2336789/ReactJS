@@ -1,4 +1,7 @@
 import React from "react";
+import axios from "axios";
+import Movie from "./Movie";
+import "./App.css";
 
 // argument로 props를 받을 것이다!
 // props object 내에는 fav: kimchi라는 값이 있음
@@ -128,15 +131,57 @@ class App extends React.Component {
   // }
   state = {
     isLoading: true,
+    movies: [],
+  };
+  // 비동기 함수 async
+  getMovies = async () => {
+    // axios.get 하는데 오래걸리니까 await을 적어줌 -> axios가 끝날 때까지 기다려줌
+    const {
+      data: {
+        data: { movies },
+      },
+    } = await axios.get(
+      "https://yts-proxy.nomadcoders1.now.sh/list_movies.json?sort_by=rating"
+    );
+    // this.setState({ movies: movies })와 동일함 -> state의 movies : axios.get에서 불러온 movies
+    this.setState({ movies, isLoading: false });
   };
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({ isLoading: false });
-    }, 6000);
+    this.getMovies();
   }
   render() {
-    const { isLoading } = this.state;
-    return <div>{isLoading ? "Loading..." : "We are ready!"}</div>;
+    const { isLoading, movies } = this.state;
+    // 이 밑의 부분에서 html을 return하는 jsx 부분에서 각 태그들에 대한 클래스명을 지정해 줄때 className으로 적어줘야함!
+    // class Component와 헷갈리기 때문!! HTML 자체에서는 안해도 됨
+    return (
+      <section className="container">
+        {isLoading ? (
+          <div className="loader">
+            <span className="loader__text">Loading...</span>
+          </div>
+        ) : (
+          <div className="movies">
+            {
+              // movies.map((movie))의 변수 movie는 어떤 이름이든 상관없음
+              movies.map((movie) => {
+                console.log(movie);
+                return (
+                  <Movie
+                    key={movie.id}
+                    id={movie.id}
+                    year={movie.year}
+                    title={movie.title}
+                    summary={movie.summary}
+                    poster={movie.medium_cover_image}
+                    genres={movie.genres}
+                  />
+                );
+              })
+            }
+          </div>
+        )}
+      </section>
+    );
   }
 }
 
