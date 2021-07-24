@@ -3,6 +3,7 @@ import React from "react";
 import { HashRouter, Route } from "react-router-dom";
 import Home from "./routes/Home";
 import About from "./routes/About";
+import Detail from "./routes/Detail";
 import Navigation from "./component/Navigation";
 import "./App.css";
 
@@ -24,8 +25,10 @@ function App() {
     // </HashRouter>
     <HashRouter>
       <Navigation />
+      {/* 라우터가 겹칠 때 겹쳐서 보임으로 exact={true}를 적어줘야함 */}
       <Route path="/" exact={true} component={Home} />
       <Route path="/about" component={About} />
+      <Route path="/movie/:id" component={Detail} />
     </HashRouter>
   );
 }
